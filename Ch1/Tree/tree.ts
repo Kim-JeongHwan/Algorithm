@@ -14,3 +14,6 @@ tree.insert(23);
 
 console.log(tree.search(15));
 console.log(tree.search(27));
+
+const tree2 = new Tree();
+tree2.delete(10);
