@@ -1,3 +1,5 @@
+import * as crypto from 'crypto';
+
 export class SimpleHashTable {
     private table: Array<[string, any]>;
     private size: number;
@@ -7,10 +9,15 @@ export class SimpleHashTable {
         this.size = size;
     }
 
+    getKey(data: string): number {
+        const hash = crypto.createHash('sha256');
+        hash.update(data);
+        const hexDig = hash.digest('hex');
+        return parseInt(hexDig, 16);
+    }
+
     hash(key: string): number {
-        return key.split('').reduce((acc, char) => {
-            return acc + char.charCodeAt(0);
-        }, 0);
+        return this.getKey(key) % this.size;
     }
 
     set(key: string, value: any): void {
@@ -33,10 +40,15 @@ export class HashTable {
         this.size = size;
     }
 
+    getKey(data: string): number {
+        const hash = crypto.createHash('sha256');
+        hash.update(data);
+        const hexDig = hash.digest('hex');
+        return parseInt(hexDig, 16);
+    }
+
     hash(key: string): number {
-        return key.split('').reduce((acc, char) => {
-            return acc + char.charCodeAt(0);
-        }, 0) % this.size;
+        return this.getKey(key) % this.size;
     }
 
     save(key: string, value: string): void {
