@@ -1,5 +1,3 @@
-import { log } from "console";
-
 export interface TreeType {
     data: number;
     left: TreeType | null;
@@ -86,6 +84,7 @@ export class Tree {
                         minParentNode = minNode;
                         minNode = minNode.left;
                     }
+
                     currentNode.data = minNode.data;
                     if (minParentNode.left === minNode) {
                         minParentNode.left = minNode.right;
