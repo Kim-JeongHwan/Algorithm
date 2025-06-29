@@ -52,11 +52,14 @@ export class Tree {
 
     delete(data: number) {
         let currentNode: TreeType | null = this.root;
-        let parentNode: TreeType | null = this.root;
-        while (currentNode !== null && parentNode !== null) {
+        let parentNode: TreeType | null = null;
+        
+        // 삭제할 노드 찾기
+        while (currentNode !== null) {
             if (data === currentNode.data) {
+                // 케이스 1: 리프 노드
                 if (currentNode.left === null && currentNode.right === null) {
-                    if (parentNode === currentNode) {
+                    if (parentNode === null) {
                         this.root = null;
                     } else {
                         if (parentNode.left === currentNode) {
@@ -65,19 +68,32 @@ export class Tree {
                             parentNode.right = null;
                         }
                     }
-                } else if (currentNode.left === null) {
-                    if (parentNode.left === currentNode) {
-                        parentNode.left = currentNode.right;
+                }
+                // 케이스 2: 자식이 하나만 있는 경우
+                else if (currentNode.left === null) {
+                    if (parentNode === null) {
+                        this.root = currentNode.right;
                     } else {
-                        parentNode.right = currentNode.right;
+                        if (parentNode.left === currentNode) {
+                            parentNode.left = currentNode.right;
+                        } else {
+                            parentNode.right = currentNode.right;
+                        }
                     }
-                } else if (currentNode.right === null) {
-                    if (parentNode.left === currentNode) {
-                        parentNode.left = currentNode.left;
+                }
+                else if (currentNode.right === null) {
+                    if (parentNode === null) {
+                        this.root = currentNode.left;
                     } else {
-                        parentNode.right = currentNode.left;
+                        if (parentNode.left === currentNode) {
+                            parentNode.left = currentNode.left;
+                        } else {
+                            parentNode.right = currentNode.left;
+                        }
                     }
-                } else {
+                }
+                // 케이스 3: 자식이 둘 다 있는 경우
+                else {
                     let minNode = currentNode.right;
                     let minParentNode = currentNode;
                     while (minNode.left !== null) {
@@ -86,10 +102,12 @@ export class Tree {
                     }
 
                     currentNode.data = minNode.data;
-                    if (minParentNode.left === minNode) {
-                        minParentNode.left = minNode.right;
+                    if (minParentNode === currentNode) {
+                        // 오른쪽 자식이 최소값인 경우
+                        currentNode.right = minNode.right; 
                     } else {
-                        minParentNode.right = minNode.right;
+                        // 오른쪽 서브트리의 왼쪽 자식이 최소값인 경우
+                        minParentNode.left = minNode.right;
                     }
                 }
                 break;

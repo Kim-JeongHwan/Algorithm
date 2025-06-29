@@ -95,6 +95,7 @@ export class Queue<T> implements IQueue<T> {
 - 배열을 사용한 간단한 구현
 - `push()`: 배열 끝에 추가 (O(1))
 - `shift()`: 배열 앞에서 제거 (O(n) - 비효율적)
+  - 배열의 첫 번째 요소를 제거하면 나머지 모든 요소를 한 칸씩 앞으로 이동해야 함
 - 실제 프로덕션에서는 연결 리스트 기반 구현 권장
 
 ### PriorityQueue.ts
@@ -232,6 +233,8 @@ console.log(priorityQueue.size());    // 2
 ### 배열 기반 구현
 - **Enqueue**: O(1) - 배열 끝에 추가
 - **Dequeue**: O(n) - 배열 앞에서 제거 (shift)
+  - 첫 번째 요소 제거 후 나머지 모든 요소를 한 칸씩 앞으로 이동
+  - 배열 크기가 클수록 비효율적
 - **Peek**: O(1) - 첫 번째 요소 접근
 
 ### 연결 리스트 기반 구현

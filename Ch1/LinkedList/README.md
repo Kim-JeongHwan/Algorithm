@@ -96,7 +96,11 @@ insertBefore(data: number, target: number): void {
             const newNode = new Node(data, node.prev, node);
             if (node.prev) {
                 node.prev.next = newNode;
+            } else {
+                // target이 head인 경우
+                this.head = newNode;
             }
+            node.prev = newNode;
             break;
         }
         node = node.prev;
@@ -114,13 +118,23 @@ delete(data: number): void {
 
     if (this.head.data === data) {
         this.head = this.head.next;
+        if (this.head) {
+            this.head.prev = null;
+        } else {
+            this.tail = null;
+        }
         return;
     }
 
     let node = this.head;
     while (node.next) {
         if (node.next.data === data) {
-            node.next = node.next.next; 
+            node.next = node.next.next;
+            if (node.next) {
+                node.next.prev = node;
+            } else {
+                this.tail = node;
+            }
             return;
         }
         node = node.next;
