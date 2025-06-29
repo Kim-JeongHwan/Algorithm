@@ -87,6 +87,3 @@ heap.insert(16);
 heap.insert(17);
 heap.insert(18);
 heap.insert(20);
-
-console.log(heap.pop());
-console.log(heap.pop());
