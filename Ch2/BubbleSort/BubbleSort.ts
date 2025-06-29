@@ -1,6 +1,6 @@
-const arr = [5, 2, 3, 1, 4]
+export const arr = [5, 2, 3, 1, 4]
 
-const bubbleSort = (arr: number[]) => {
+export const bubbleSort = (arr: number[]) => {
     let n = arr.length
     if (n == 0) {
         return
