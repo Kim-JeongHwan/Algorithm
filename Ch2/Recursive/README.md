@@ -1,10 +1,10 @@
 # 재귀 알고리즘 (Recursive Algorithms)
 
-이 폴더는 다양한 재귀 알고리즘들의 구현을 포함합니다.
+이 폴더는 순수한 재귀 알고리즘들의 구현을 포함합니다.
 
 ## 파일 목록
 
-### 1. Recursive.ts
+### Recursive.ts
 기본적인 재귀 알고리즘들의 모음입니다.
 
 #### 구현된 함수들:
@@ -15,98 +15,128 @@
 - **collatz(n)**: 콜라츠 추측 알고리즘
 - **countWays(n)**: n을 1, 2, 3의 합으로 나타내는 방법의 수
 
-### 2. DynamicPlan.ts
-동적 계획법과 관련된 재귀 알고리즘입니다.
-
-#### 구현된 함수들:
-
-- **fibonacci(n)**: 피보나치 수열 계산
-- **tileWays(n)**: 2×1 타일링 문제
-- **triangle(num)**: 삼각형 수열 계산 (동적 계획법)
-
-## 2×1 타일링 문제 (Dynamic Programming)
+## 팩토리얼 (Factorial)
 
 ### 문제 설명
-2×n 크기의 직사각형을 **2×1 타일과 1×2 타일**로 채우는 방법의 수를 구하는 문제입니다.
+n! = n × (n-1) × (n-2) × ... × 1을 계산하는 문제입니다.
 
-### 해결 방법
-이 문제는 피보나치 수열과 동일한 패턴을 가집니다:
-
-- `f(n) = f(n-1) + f(n-2)`
-- `f(1) = 1` (2×1 직사각형: 세로로 1개)
-- `f(2) = 2` (2×2 직사각형: 세로로 2개 또는 가로로 2개)
-
-### 타일 배치 방법
-- **2×1 타일**: 세로로 배치
-- **1×2 타일**: 가로로 배치 (2개를 나란히 배치)
-
-### 예시
-- n=1: 1가지 방법 (2×1 타일 1개)
-- n=2: 2가지 방법 (2×1 타일 2개 또는 1×2 타일 2개)
-- n=3: 3가지 방법
-- n=4: 5가지 방법
-- n=5: 8가지 방법
+### 재귀적 해결 방법
+- **기저 케이스**: n ≤ 1일 때 1 반환
+- **재귀 케이스**: n × factorial(n-1)
 
 ### 구현
 ```typescript
-const tileWays = (n: number): number => {
-  if (n <= 2) return n;
-  return tileWays(n - 1) + tileWays(n - 2);
+export const factorial = (n: number): number => {
+  if (n <= 1) return 1;
+  return n * factorial(n - 1);
 };
 ```
 
-## 삼각형 수열 문제 (Dynamic Programming)
+### 예시
+- factorial(5) = 5 × 4 × 3 × 2 × 1 = 120
+- factorial(3) = 3 × 2 × 1 = 6
+
+## 리스트 재귀 (List Recursion)
 
 ### 문제 설명
-삼각형 수열은 다음과 같은 점화식을 따릅니다:
-- `T(n) = T(n-2) + T(n-3)`
-- `T(1) = T(2) = T(3) = 1`
+배열의 모든 요소를 재귀적으로 더하는 문제입니다.
 
-### 해결 방법
-동적 계획법을 사용하여 중복 계산을 피하고 효율적으로 해결합니다:
-
-1. **기저 케이스**: n ≤ 3일 때 1 반환
-2. **캐시 배열**: 계산된 값을 저장할 배열 생성
-3. **점진적 계산**: 4부터 n까지 순차적으로 계산
-
-### 예시
-- T(1) = 1
-- T(2) = 1  
-- T(3) = 1
-- T(4) = T(2) + T(1) = 1 + 1 = 2
-- T(5) = T(3) + T(2) = 1 + 1 = 2
-- T(6) = T(4) + T(3) = 2 + 1 = 3
+### 재귀적 해결 방법
+- **기저 케이스**: 빈 배열일 때 0 반환
+- **재귀 케이스**: 첫 번째 요소 + 나머지 배열의 합
 
 ### 구현
 ```typescript
-const triangle = (num: number): number => {
-  // 기저 케이스
-  if (num <= 3) return 1;
-  
-  // 캐시 배열 초기화
-  const cache: number[] = [1, 1, 1];
-  
-  // 동적 계획법으로 계산
-  for (let i = 3; i < num; i++) {
-    cache.push(cache[i - 2] + cache[i - 3]);
-  }
-  
-  return cache[num - 1];
+export const listRecursion = (list: number[]): number => {
+  if (list.length === 0) return 0;
+  return list[0] + listRecursion(list.slice(1));
 };
 ```
+
+### 예시
+- listRecursion([1, 2, 3, 4]) = 1 + 2 + 3 + 4 = 10
+- listRecursion([5, 10]) = 5 + 10 = 15
+
+## 팰린드롬 (Palindrome)
+
+### 문제 설명
+문자열이 앞뒤로 읽어도 같은지 확인하는 문제입니다.
+
+### 재귀적 해결 방법
+- **기저 케이스**: 문자열 길이가 1 이하일 때 true
+- **재귀 케이스**: 첫 글자와 마지막 글자가 같고, 나머지 부분이 팰린드롬
+
+### 구현
+```typescript
+export const palindrome = (str: string): boolean => {
+  if (str.length <= 1) return true;
+  return str[0] === str[str.length - 1] && palindrome(str.slice(1, -1));
+};
+```
+
+### 예시
+- palindrome("racecar") = true
+- palindrome("hello") = false
+- palindrome("anna") = true
+
+## 콜라츠 추측 (Collatz Conjecture)
+
+### 문제 설명
+주어진 수에 대해 다음 규칙을 적용하여 1이 될 때까지의 단계 수를 계산합니다:
+- 짝수면 2로 나누기
+- 홀수면 3을 곱하고 1 더하기
+
+### 재귀적 해결 방법
+- **기저 케이스**: n이 1일 때 1 반환
+- **재귀 케이스**: 짝수면 n/2, 홀수면 3n+1에 대해 재귀 호출
+
+### 구현
+```typescript
+export const collatz = (n: number): number => {
+  if (n === 1) return 1;
+  if (n % 2 === 0) return collatz(n / 2);
+  return collatz(3 * n + 1);
+};
+```
+
+### 예시
+- collatz(6) → 3 → 10 → 5 → 16 → 8 → 4 → 2 → 1 (8단계)
+- collatz(7) → 22 → 11 → 34 → 17 → 52 → 26 → 13 → 40 → 20 → 10 → 5 → 16 → 8 → 4 → 2 → 1 (16단계)
+
+## 카운트 웨이즈 (Count Ways)
+
+### 문제 설명
+n을 1, 2, 3의 합으로 나타내는 방법의 수를 계산하는 문제입니다.
+
+### 재귀적 해결 방법
+- **기저 케이스**: n이 0일 때 1, n이 음수일 때 0
+- **재귀 케이스**: countWays(n-1) + countWays(n-2) + countWays(n-3)
+
+### 구현
+```typescript
+export const countWays = (n: number): number => {
+  if (n === 0) return 1;
+  if (n < 0) return 0;
+  return countWays(n - 1) + countWays(n - 2) + countWays(n - 3);
+};
+```
+
+### 예시
+- countWays(3) = 4
+  - 1+1+1, 1+2, 2+1, 3
+- countWays(4) = 7
+  - 1+1+1+1, 1+1+2, 1+2+1, 2+1+1, 2+2, 1+3, 3+1
 
 ## 사용법
 
 ```typescript
-import { factorial, palindrome, countWays } from './Recursive';
-import { fibonacci, tileWays, triangle } from './DynamicPlan';
+import { factorial, listRecursion, palindrome, collatz, countWays } from './Recursive';
 
 console.log(factorial(5)); // 120
+console.log(listRecursion([1, 2, 3, 4])); // 10
 console.log(palindrome("racecar")); // true
+console.log(collatz(6)); // 8
 console.log(countWays(3)); // 4
-console.log(fibonacci(10)); // 55
-console.log(tileWays(5)); // 8
-console.log(triangle(10)); // 9
 ```
 
 ## 시간 복잡도
@@ -116,10 +146,19 @@ console.log(triangle(10)); // 9
 - **palindrome**: O(n)
 - **collatz**: O(log n) (평균적으로)
 - **countWays**: O(3^n) (지수적)
-- **fibonacci**: O(2^n) (지수적)
-- **tileWays**: O(2^n) (지수적)
-- **triangle**: O(n) (동적 계획법 사용)
 
 ## 공간 복잡도
 
-모든 함수는 재귀 호출 스택으로 인해 O(n)의 공간 복잡도를 가집니다. 
+모든 함수는 재귀 호출 스택으로 인해 O(n)의 공간 복잡도를 가집니다.
+
+## 재귀의 장단점
+
+### 장점
+1. **직관적**: 문제를 자연스럽게 분해
+2. **간결**: 복잡한 반복문 없이 구현 가능
+3. **수학적**: 수학적 정의와 일치
+
+### 단점
+1. **스택 오버플로우**: 깊은 재귀 시 메모리 부족
+2. **성능**: 중복 계산으로 인한 비효율성
+3. **디버깅**: 복잡한 호출 스택으로 인한 어려움 
