@@ -8,5 +8,6 @@ export const quickSort = (arr: number[]): number[] => {
   const pivot = arr[Math.floor(arr.length / 2)];
   const left = arr.filter((num) => num < pivot);
   const right = arr.filter((num) => num > pivot);
+
   return [...quickSort(left), pivot, ...quickSort(right)];
 };
