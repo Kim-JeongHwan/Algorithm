@@ -235,7 +235,148 @@ function dijkstra(graph: Graph, start: string): { [key: string]: number } {
     return distances;
 }
 
+/**
+ * 다익스트라 알고리즘 (상세 로그 버전)
+ * 각 단계를 콘솔에 출력하여 알고리즘의 동작을 이해하기 쉽게 함
+ */
+function dijkstraWithLog(graph: Graph, start: string): { [key: string]: number } {
+    console.log('\n========================================');
+    console.log('다익스트라 알고리즘 단계별 실행');
+    console.log('========================================\n');
+    
+    // 각 노드까지의 최단 거리를 저장
+    const distances: { [key: string]: number } = {};
+    
+    // 모든 노드의 거리를 무한대로 초기화
+    console.log('📋 초기화 단계:');
+    for (const node in graph) {
+        distances[node] = Infinity;
+    }
+    distances[start] = 0;
+    
+    const distancesStr = Object.entries(distances)
+        .map(([k, v]) => `${k}: ${v === Infinity ? '∞' : v}`)
+        .join(', ');
+    console.log(`  거리 배열: { ${distancesStr} }`);
+    console.log(`  시작 노드: ${start}\n`);
+
+    // 우선순위 큐 (최소 힙)
+    const pq = new MinHeap<string>();
+    pq.push(0, start);
+    console.log(`  우선순위 큐에 (0, ${start}) 추가\n`);
+
+    // 방문한 노드 집합
+    const visited = new Set<string>();
+    
+    let step = 1;
+
+    while (!pq.isEmpty()) {
+        const current = pq.pop();
+        if (!current) break;
+
+        const [currentDistance, currentNode] = current;
+        
+        console.log(`${'='.repeat(40)}`);
+        console.log(`🔍 Step ${step}: 노드 ${currentNode} 처리`);
+        console.log(`${'='.repeat(40)}`);
+        console.log(`  큐에서 꺼낸 값: (거리: ${currentDistance}, 노드: ${currentNode})`);
+
+        // 이미 방문한 노드는 스킵
+        if (visited.has(currentNode)) {
+            console.log(`  ⏭️  이미 방문한 노드 → 스킵\n`);
+            continue;
+        }
+
+        visited.add(currentNode);
+        console.log(`  ✅ 노드 ${currentNode} 방문 처리`);
+        console.log(`  현재 방문한 노드들: [${Array.from(visited).join(', ')}]`);
+
+        // 현재 노드와 연결된 모든 이웃 노드 확인
+        const neighbors = graph[currentNode];
+        console.log(`\n  📍 노드 ${currentNode}의 이웃들 확인:`);
+        
+        let hasUpdate = false;
+        for (const neighbor in neighbors) {
+            const weight = neighbors[neighbor];
+            const distance = currentDistance + weight;
+            
+            const oldDistance = distances[neighbor];
+            const oldDistanceStr = oldDistance === Infinity ? '∞' : oldDistance;
+            
+            console.log(`\n    → 이웃 노드: ${neighbor}`);
+            console.log(`      간선 가중치: ${currentNode} → ${neighbor} = ${weight}`);
+            console.log(`      새로운 거리: ${currentDistance} + ${weight} = ${distance}`);
+            console.log(`      기존 거리: ${oldDistanceStr}`);
+
+            // 더 짧은 경로를 찾으면 업데이트
+            if (distance < distances[neighbor]) {
+                distances[neighbor] = distance;
+                pq.push(distance, neighbor);
+                console.log(`      ✨ 업데이트! ${oldDistanceStr} → ${distance}`);
+                console.log(`      우선순위 큐에 (${distance}, ${neighbor}) 추가`);
+                console.log(`      💡 힙이 자동으로 우선순위(거리)에 따라 정렬!`);
+                hasUpdate = true;
+            } else {
+                console.log(`      ❌ 업데이트 없음 (${distance} >= ${oldDistanceStr})`);
+            }
+        }
+        
+        if (!hasUpdate) {
+            console.log(`\n  ℹ️  거리 업데이트 없음`);
+        }
+        
+        // 현재 거리 배열 상태
+        console.log(`\n  📊 현재 거리 배열:`);
+        const currentDistancesStr = Object.entries(distances)
+            .map(([k, v]) => {
+                const distStr = v === Infinity ? '∞' : v;
+                const mark = visited.has(k) ? '✓' : ' ';
+                return `${k}: ${distStr}${mark}`;
+            })
+            .join(', ');
+        console.log(`     { ${currentDistancesStr} }`);
+        console.log(`     (✓ = 방문 완료)`);
+        
+        // 우선순위 큐 상태
+        const pqState = pq.getHeap();
+        if (pqState.length > 0) {
+            const pqStr = pqState.map(([d, n]) => `(${d}, ${n})`).join(', ');
+            console.log(`\n  📦 우선순위 큐 상태: [${pqStr}]`);
+            
+            // 최소값 표시
+            const minValue = pqState[0];
+            console.log(`     → 다음에 꺼낼 값: (${minValue[0]}, ${minValue[1]}) ← 가장 작은 거리!`);
+            
+            if (pqState.length > 1) {
+                console.log(`     💡 힙은 최소값을 루트(첫 번째)에 유지합니다`);
+                console.log(`        추가 순서와 상관없이 우선순위(거리)가 작은 것이 앞으로!`);
+            }
+        } else {
+            console.log(`\n  📦 우선순위 큐: 비어있음`);
+        }
+        
+        console.log();
+        step++;
+    }
+
+    console.log(`${'='.repeat(40)}`);
+    console.log('🎉 알고리즘 완료!');
+    console.log(`${'='.repeat(40)}`);
+    console.log('\n📊 최종 결과 (최단 거리):');
+    for (const node in distances) {
+        const dist = distances[node];
+        const distStr = dist === Infinity ? '∞ (도달 불가)' : dist.toString();
+        console.log(`  ${start} → ${node}: ${distStr}`);
+    }
+    console.log();
+
+    return distances;
+}
+
+// ============================================
 // 테스트 코드
+// ============================================
+
 const testGraph: Graph = {
     'A': { 'B': 2, 'C': 5 },
     'B': { 'A': 2, 'C': 3, 'D': 1 },
@@ -243,25 +384,60 @@ const testGraph: Graph = {
     'D': { 'B': 1, 'C': 2 }
 };
 
-console.log('다익스트라 알고리즘 테스트');
-console.log('그래프:', testGraph);
-console.log('\nA 노드에서 시작:');
-console.log(dijkstra(testGraph, 'A'));
+console.log('\n');
+console.log('╔════════════════════════════════════════╗');
+console.log('║   다익스트라 알고리즘 상세 설명 버전   ║');
+console.log('╚════════════════════════════════════════╝');
+console.log('\n그래프 구조:');
+console.log('  A --2--> B --1--> D');
+console.log('  |        |        |');
+console.log('  5        3        2');
+console.log('  |        |        |');
+console.log('  └------> C <------┘');
+console.log('\n간선 정보:', JSON.stringify(testGraph, null, 2));
 
-// MinHeap 동작 확인
-console.log('\n최소 힙 동작 확인:');
+// 상세 로그 버전 실행
+dijkstraWithLog(testGraph, 'A');
+
+// ============================================
+// MinHeap 참고 자료 (필요시 주석 해제)
+// ============================================
+console.log('\n\n');
+console.log('╔════════════════════════════════════════╗');
+console.log('║      MinHeap 간단 동작 확인           ║');
+console.log('╚════════════════════════════════════════╝\n');
+
 const queue = new MinHeap<string>();
 queue.push(2, 'A');
 queue.push(5, 'B');
 queue.push(1, 'C');
 queue.push(7, 'D');
-console.log('힙 상태:', queue.getHeap());
 
-console.log('\n힙에서 꺼내기:');
+console.log('요소 추가 순서: (2,A) → (5,B) → (1,C) → (7,D)');
+console.log('힙 상태:', queue.getHeap());
+console.log('\n💡 중요: 추가한 순서는 2 → 5 → 1 → 7 이었지만,');
+console.log('         힙은 자동으로 최소값 1을 루트에 배치!');
+console.log('         이것이 heapifyUp()의 역할입니다.\n');
+console.log('트리 구조:');
+console.log('       1(C)');
+console.log('      /    \\');
+console.log('   5(B)    2(A)');
+console.log('   /');
+console.log('7(D)');
+console.log('\n→ 최소값이 루트에 위치: (1,C)');
+console.log('→ 부모 < 자식 규칙 만족: 1<5, 1<2, 5<7\n');
+
+console.log('pop() 순서 (최소값부터):');
 while (!queue.isEmpty()) {
-    console.log(queue.pop());
+    console.log('  ', queue.pop());
 }
 
+// ============================================
+// 아래는 Heap의 상세 동작 설명입니다.
+// 필요하지 않다면 주석 처리할 수 있습니다.
+// ============================================
+
+/* 
 // pop() 연산 상세 설명 예제
 console.log('\n\n=== pop() 연산 단계별 설명 ===');
 const demoHeap = new MinHeap<string>();
@@ -385,3 +561,6 @@ console.log('  ✓ 유효한 힙 (1 < 5 이고 1 < 2 이므로)');
 console.log('\n핵심: 힙은 "부모-자식" 관계만 중요하고, "형제" 간 관계는 무시!');
 console.log('     → 이것이 힙이 "부분 정렬" 자료구조인 이유');
 console.log('     → 완전 정렬이 아니라서 O(log n)에 삽입/삭제 가능!');
+*/
+
+console.log('\n\n💡 힙의 상세 동작이 궁금하다면 위의 주석을 해제하세요!');
